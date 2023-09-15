@@ -4,7 +4,7 @@
    <div class="col-md-6 mx-auto">
       <div class="card">
          {% if object %}
-         <div class="card-header">Изменение рассылки.</div>
+         <div class="card-header">Изменение рассылки "{{ object.mail_theme }}".</div>
          {% else %}
          <div class="card-header">Создание рассылки.</div>
          {% endif %}
@@ -34,7 +34,7 @@
                <div class="mt-3">
                   {{ form.mail_text.label_tag }}{{ form.mail_text }}
                </div>
-               <button type="submit" name="save_product" class="btn btn-success mt-3">
+               <button type="submit" name="save_mailing" class="btn btn-success mt-3">
                {% if object %}
                   Сохранить
                {% else %}
@@ -42,7 +42,7 @@
                {% endif %}
                </button>
                {% if clients.count > 1 %}
-               <a id="select-all-clients" type="submit" name="save_product" class="btn btn-primary custom-button mt-3">
+               <a id="select-all-clients" type="submit" name="save_clients" class="btn btn-primary custom-button mt-3">
                   Выбрать всех клиентов
                </a>
                {% endif %}

@@ -66,3 +66,9 @@ class UpdateMailingForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Mailing
         fields = ('mailing_time', 'regularity', 'clients')
+
+
+class CreateClientForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = Client
+        fields = '__all__'

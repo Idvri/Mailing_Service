@@ -36,7 +36,7 @@ class Mailing(models.Model):
     mail_text = models.TextField(max_length=350, verbose_name='тело письма')
 
     def __str__(self):
-        return f'Рассылка для "{self.clients}".'
+        return f'Рассылка {self.mail_theme}.'
 
 
 class MailingLog(models.Model):

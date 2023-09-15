@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        Рассылка: "{{ object.pk }}"
+                        Рассылка "{{ object.mail_theme }}"
                     </h3>
                     <h3 class="card-title">
                         {% if object.user %}
@@ -17,13 +17,10 @@
                 </div>
                 <div class="card-body">
                     <p>
-                        Тема рассылки: {{ object.mail_theme }}
-                    </p>
-                    <p>
                         Cообщение: {{ object.mail_text }}
                     </p>
                     <p>
-                        Клиенты:
+                        Кому:
                         {% for client in mailing.clients.all  %}
                         {{ client.email }};
                         {% endfor %}
