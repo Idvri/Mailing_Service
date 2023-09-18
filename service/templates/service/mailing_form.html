@@ -19,7 +19,7 @@
                <div class="alert alert-info">
                   Клиенты не обнаружены.
                </div>
-               <a href="#" class="btn btn-primary">Добавить клиента</a>
+               <a href="{% url 'service:create_client' %}" class="btn btn-primary">Добавить клиента</a>
                {% else %}
                <div class="mt-3">
                   {{ form.clients.label_tag }}{{ form.clients }}
@@ -47,7 +47,7 @@
                </a>
                {% endif %}
                {% if clients.count > 0 %}
-                  <a href="#" class="btn btn-primary mt-3">Добавить клиента</a>
+                  <a href="{% url 'service:create_client' %}" class="btn btn-primary mt-3">Добавить клиента</a>
                {% endif %}
                <a onclick="goBack()" class="btn btn-warning mt-2">Отмена</a>
             </form>
