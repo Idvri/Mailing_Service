@@ -23,6 +23,7 @@ class Command(BaseCommand):
                         status='failed',
                         mailing_list=mailing,
                         server_response='Отсутсвуют клиенты для рассылки.',
+                        user=mailing.user,
                     )
                     log.save()
                     break
@@ -41,6 +42,7 @@ class Command(BaseCommand):
                             status='failed',
                             mailing_list=mailing,
                             server_response=error,
+                            user=mailing.user,
                         )
                         log.client.set([client])
                         log.save()
@@ -50,6 +52,7 @@ class Command(BaseCommand):
                             log = MailingLog.objects.create(
                                 status='success',
                                 mailing_list=mailing,
+                                user=mailing.user,
                             )
                             log.client.set([client])
                             log.save()
@@ -57,6 +60,7 @@ class Command(BaseCommand):
                             log = MailingLog.objects.create(
                                 status='failed',
                                 mailing_list=mailing,
+                                user=mailing.user,
                             )
                             log.client.set([client])
                             log.save()

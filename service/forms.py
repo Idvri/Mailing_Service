@@ -1,10 +1,10 @@
 from django import forms
+from django.contrib.auth import get_user_model
 
 from service.models import Mailing, Client
 
 
 class StyleFormMixin:
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
@@ -26,7 +26,7 @@ class CreateMailingForm(StyleFormMixin, forms.ModelForm):
     )
 
     clients = forms.ModelMultipleChoiceField(
-        queryset=Client.objects.all(),
+        queryset=Client.objects.none(),
         widget=forms.CheckboxSelectMultiple,
         label='Клиенты'
     )
@@ -43,10 +43,15 @@ class CreateMailingForm(StyleFormMixin, forms.ModelForm):
 
     class Meta:
         model = Mailing
-        exclude = ('status',)
+        exclude = ('status', 'user',)
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['clients'].queryset = Client.objects.filter(user=user)
 
 
 class UpdateMailingForm(StyleFormMixin, forms.ModelForm):
+
     mailing_time = forms.DateTimeField(
         widget=forms.DateTimeInput(
             attrs={
@@ -58,7 +63,7 @@ class UpdateMailingForm(StyleFormMixin, forms.ModelForm):
     )
 
     clients = forms.ModelMultipleChoiceField(
-        queryset=Client.objects.all(),
+        queryset=Client.objects.none(),
         widget=forms.CheckboxSelectMultiple,
         label='Клиенты'
     )
@@ -67,8 +72,13 @@ class UpdateMailingForm(StyleFormMixin, forms.ModelForm):
         model = Mailing
         fields = ('mailing_time', 'regularity', 'clients')
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        self.fields['clients'].queryset = Client.objects.filter(user=user)
+
 
 class CreateClientForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Client
-        fields = '__all__'
+        exclude = ('user',)

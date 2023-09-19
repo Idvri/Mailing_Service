@@ -1,5 +1,7 @@
-# from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, CreateView, UpdateView, DetailView, DeleteView, ListView
 
 from service.forms import CreateMailingForm, UpdateMailingForm, CreateClientForm
@@ -11,18 +13,35 @@ class DashboardView(TemplateView):
     template_name = 'service/includes/inc_main_title.html'
 
 
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
 class CreateMailingView(CreateView):
     model = Mailing
     form_class = CreateMailingForm
     success_url = reverse_lazy('service:list_mailing')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        clients = Client.objects.all()
+    def get(self, request, **kwargs):
+        form = self.form_class(request.user, request.POST)
+        context = {
+            'form': form,
+        }
+        clients = Client.objects.filter(user=self.request.user)
         context['clients'] = clients
-        return context
+        return render(request, 'service/mailing_form.html', context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.user, request.POST)
+
+        if form.is_valid():
+            mailing = form.save(commit=False)
+            mailing.user = self.request.user
+            mailing.save()
+            return redirect(self.success_url)
+
+        else:
+            print(form.errors)
 
 
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
 class UpdateMailingView(UpdateView):
     model = Mailing
     form_class = UpdateMailingForm
@@ -30,38 +49,68 @@ class UpdateMailingView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        clients = Client.objects.all()
+        clients = Client.objects.filter(user=self.request.user)
         context['clients'] = clients
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
+
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
 class ListMailingView(ListView):
     model = Mailing
     template_name = 'service/mailing_list.html'
 
+    def get_queryset(self):
+        return Mailing.objects.filter(user=self.request.user)
 
+
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
 class DetailMailingView(DetailView):
     model = Mailing
     template_name = 'service/mailing_detail.html'
 
 
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
 class DeleteMailingView(DeleteView):
     model = Mailing
     template_name = 'service/mailing_confirm_delete.html'
     success_url = reverse_lazy('service:list_mailing')
 
 
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
 class CreateClientView(CreateView):
     model = Client
     form_class = CreateClientForm
     success_url = reverse_lazy('service:clients_list')
 
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
 
+        if form.is_valid():
+            try:
+                client = form.save(commit=False)
+                client.user = self.request.user
+                client.save()
+            except ValueError:
+                return render(request, 'service/client_exists.html')
+            else:
+                return redirect(self.success_url)
+
+
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
 class ListClientView(ListView):
     model = Client
     template_name = 'service/clients_list.html'
 
+    def get_queryset(self):
+        return Client.objects.filter(user=self.request.user)
 
+
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
 class DeleteClientView(DeleteView):
     model = Client
     template_name = 'service/client_confirm_delete.html'
