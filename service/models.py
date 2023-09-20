@@ -63,7 +63,7 @@ class MailingLog(models.Model):
     )
 
     timestamp = models.DateTimeField(default=timezone.now, verbose_name='дата и время попытки')
-    status = models.CharField(choices=STATUS_CHOICES, verbose_name='статус попытки')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, verbose_name='статус попытки')
     server_response = models.TextField(verbose_name='ответ почтового сервера', **NULLABLE)
     client = models.ManyToManyField(Client, related_name='logs', verbose_name='клиент')
     mailing_list = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name='logs',
