@@ -2,16 +2,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, CreateView, UpdateView, DetailView, DeleteView, ListView
+from django.views.generic import CreateView, UpdateView, DetailView, DeleteView, ListView
 
 from service.forms import CreateMailingForm, UpdateMailingForm, CreateClientForm
 from service.models import Mailing, Client
 
 
 # Create your views here.
-class DashboardView(TemplateView):
-    template_name = 'service/includes/inc_main_title.html'
-
 
 @method_decorator(login_required(login_url='users:login'), name='dispatch')
 class CreateMailingView(CreateView):

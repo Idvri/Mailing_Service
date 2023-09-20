@@ -10,15 +10,20 @@ class Client(admin.ModelAdmin):
 
 @admin.register(Mailing)
 class Mailing(admin.ModelAdmin):
-    list_display = ('mailing_time', 'regularity', 'status', 'mail_theme', 'mail_text', 'user')
+    list_display = ('mailing_time', 'regularity', 'status', 'user', 'is_active')
+    readonly_fields = ('mailing_time', 'regularity', 'status', 'clients', 'mail_theme', 'mail_text', 'user')
 
-    def has_change_permission(self, request, obj=None):
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
         return False
 
 
 @admin.register(MailingLog)
 class MailingLog(admin.ModelAdmin):
     list_display = ('timestamp', 'status', 'server_response', 'get_client_names', 'mailing_list', 'user')
+    readonly_fields = ('client',)
 
     def get_client_names(self, obj):
         return ", ".join([str(client) for client in obj.client.all()])

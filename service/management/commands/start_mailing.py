@@ -29,6 +29,7 @@ class Command(BaseCommand):
                     break
 
                 for client in related_clients:
+
                     try:
                         status = send_mail(
                             mailing.mail_theme,
@@ -37,6 +38,8 @@ class Command(BaseCommand):
                             [client.email],
                             fail_silently=False
                         )
+                        mailing.status = 'started'
+                        mailing.save()
                     except ConnectionRefusedError as error:
                         log = MailingLog.objects.create(
                             status='failed',
@@ -46,6 +49,8 @@ class Command(BaseCommand):
                         )
                         log.client.set([client])
                         log.save()
+                        mailing.status = 'created'
+                        mailing.save()
                     else:
 
                         if status:
@@ -56,6 +61,8 @@ class Command(BaseCommand):
                             )
                             log.client.set([client])
                             log.save()
+                            mailing.status = 'completed'
+                            mailing.save()
                         else:
                             log = MailingLog.objects.create(
                                 status='failed',
@@ -64,6 +71,8 @@ class Command(BaseCommand):
                             )
                             log.client.set([client])
                             log.save()
+                            mailing.status = 'created'
+                            mailing.save()
 
             else:
                 continue
@@ -75,7 +84,10 @@ class Command(BaseCommand):
 
         if mailing_latest_log is None:
 
-            if mailing.mailing_time.replace(tzinfo=None).replace(
+            if not mailing.is_active:
+                return False
+
+            elif mailing.mailing_time.replace(
                     hour=0,
                     minute=0,
                     second=0,
@@ -83,6 +95,12 @@ class Command(BaseCommand):
                     tzinfo=None
             ) <= time:
                 return True
+
+        elif not mailing.is_active:
+            return False
+
+        elif mailing_latest_log.status == 'failed':
+            return True
 
         else:
 
