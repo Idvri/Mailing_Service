@@ -7,15 +7,16 @@ from service.models import Mailing, MailingLog
 
 
 class Command(BaseCommand):
-    mailings = Mailing.objects.all()
-    logs = MailingLog.objects.all()
-    time = datetime.datetime.now()
 
     def handle(self, *args, **kwargs):
 
-        for mailing in self.mailings:
+        mailings = Mailing.objects.all()
+        logs = MailingLog.objects.all()
+        time = datetime.datetime.now()
 
-            if self.get_info_for_mailing_start(mailing, self.logs, self.time):
+        for mailing in mailings:
+
+            if self.get_info_for_mailing_start(mailing, logs, time):
                 related_clients = mailing.clients.all()
 
                 if len(related_clients) == 0:
