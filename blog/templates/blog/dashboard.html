@@ -1,6 +1,8 @@
 {% extends 'service/index.html' %}
 {% load service_tags %}
 {% block content %}
+{% load cache %}
+{% cache 60 dashboard %}
 <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
     <h1 class="display-4">RedDeadMail</h1>
     <p class="lead">RedDeadMail - это ВАШ сервис рассылок! Мы ваш лучший помощник!</p>
@@ -42,4 +44,5 @@
 </div>
 {% endfor %}
 </div>
+{% endcache %}
 {% endblock %}
