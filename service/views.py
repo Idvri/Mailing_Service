@@ -17,7 +17,7 @@ class CreateMailingView(CreateView):
     success_url = reverse_lazy('service:list_mailing')
 
     def get(self, request, **kwargs):
-        form = self.form_class(request.user, request.POST)
+        form = self.form_class(self.request.user, request.POST)
         context = {
             'form': form,
         }
@@ -32,6 +32,7 @@ class CreateMailingView(CreateView):
             mailing = form.save(commit=False)
             mailing.user = self.request.user
             mailing.save()
+            form.save_m2m()
             return redirect(self.success_url)
 
         else:

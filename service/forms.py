@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.auth import get_user_model
 
 from service.models import Mailing, Client
 
@@ -43,7 +42,7 @@ class CreateMailingForm(StyleFormMixin, forms.ModelForm):
 
     class Meta:
         model = Mailing
-        exclude = ('status', 'user',)
+        exclude = ('status', 'user', 'is_active')
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
