@@ -1,8 +1,8 @@
 from django.urls import path
 
-from blog.views import BlogListView
 from service.views import CreateMailingView, ListMailingView, UpdateMailingView, DeleteMailingView, \
-    DetailMailingView, CreateClientView, ListClientView, DeleteClientView
+    DetailMailingView, CreateClientView, ListClientView, DeleteClientView, MailingLogListView, DeleteMailingLogView, \
+    DetailMailingLogView
 
 app_name = 'service'
 
@@ -15,4 +15,7 @@ urlpatterns = [
     path('create_client/', CreateClientView.as_view(), name='create_client'),
     path('clients_list/', ListClientView.as_view(), name='clients_list'),
     path('delete_client/<int:pk>/', DeleteClientView.as_view(), name='delete_client'),
+    path('mailing_logs_list/', MailingLogListView.as_view(), name='mailing_logs_list'),
+    path('mailing_log_detail/<int:pk>/', DetailMailingLogView.as_view(), name='mailing_log_detail'),
+    path('delete_mailing_log/<int:pk>/', DeleteMailingLogView.as_view(), name='delete_mailing_log'),
 ]

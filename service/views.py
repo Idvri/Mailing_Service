@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, DetailView, DeleteView, ListView
 
 from service.forms import CreateMailingForm, UpdateMailingForm, CreateClientForm
-from service.models import Mailing, Client
+from service.models import Mailing, Client, MailingLog
 
 
 # Create your views here.
@@ -29,6 +29,9 @@ class CreateMailingView(CreateView):
         form = self.form_class(request.user, request.POST)
 
         if form.is_valid():
+            clients = form.cleaned_data.get('clients')
+            if not clients:
+                form.add_error('clients', 'Выберите хотя бы одного клиента.')
             mailing = form.save(commit=False)
             mailing.user = self.request.user
             mailing.save()
@@ -36,7 +39,7 @@ class CreateMailingView(CreateView):
             return redirect(self.success_url)
 
         else:
-            print(form.errors)
+            return render(request, 'service/no_client.html')
 
 
 @method_decorator(login_required(login_url='users:login'), name='dispatch')
@@ -113,3 +116,28 @@ class DeleteClientView(DeleteView):
     model = Client
     template_name = 'service/client_confirm_delete.html'
     success_url = reverse_lazy('service:clients_list')
+
+
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
+class MailingLogListView(ListView):
+    model = MailingLog
+    template_name = 'service/mailing_logs_list.html'
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return self.model.objects.all
+        else:
+            return self.model.objects.filter(user=self.request.user)
+
+
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
+class DetailMailingLogView(DetailView):
+    model = MailingLog
+    template_name = 'service/mailing_log_detail.html'
+
+
+@method_decorator(login_required(login_url='users:login'), name='dispatch')
+class DeleteMailingLogView(DeleteView):
+    model = MailingLog
+    template_name = 'service/log_confirm_delete.html'
+    success_url = reverse_lazy('service:mailing_logs_list')

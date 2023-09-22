@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
         mailings = Mailing.objects.all()
         logs = MailingLog.objects.all()
-        time = datetime.datetime.now()
+        time = datetime.datetime.now().replace(tzinfo=None)
 
         for mailing in mailings:
 
@@ -43,6 +43,7 @@ class Command(BaseCommand):
                         mailing.save()
                     except ConnectionRefusedError as error:
                         log = MailingLog.objects.create(
+                            timestamp=time,
                             status='failed',
                             mailing_list=mailing,
                             server_response=error,
@@ -56,6 +57,7 @@ class Command(BaseCommand):
 
                         if status:
                             log = MailingLog.objects.create(
+                                timestamp=time,
                                 status='success',
                                 mailing_list=mailing,
                                 user=mailing.user,
@@ -66,6 +68,7 @@ class Command(BaseCommand):
                             mailing.save()
                         else:
                             log = MailingLog.objects.create(
+                                timestamp=time,
                                 status='failed',
                                 mailing_list=mailing,
                                 user=mailing.user,
@@ -81,7 +84,6 @@ class Command(BaseCommand):
     @staticmethod
     def get_info_for_mailing_start(mailing, logs, time):
         mailing_latest_log = logs.filter(mailing_list=mailing).all().order_by('-timestamp').first()
-        time = time.replace(hour=0, minute=0, second=0, microsecond=0)
 
         if mailing_latest_log is None:
 

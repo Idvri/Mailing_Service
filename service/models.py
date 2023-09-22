@@ -1,6 +1,7 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.db import models
-from django.utils import timezone
 
 NULLABLE = {'null': True, 'blank': True}
 
@@ -62,7 +63,7 @@ class MailingLog(models.Model):
         ('failed', 'Не удалось'),
     )
 
-    timestamp = models.DateTimeField(default=timezone.now, verbose_name='дата и время попытки')
+    timestamp = models.DateTimeField(default=datetime.now, verbose_name='дата и время попытки')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, verbose_name='статус попытки')
     server_response = models.TextField(verbose_name='ответ почтового сервера', **NULLABLE)
     client = models.ManyToManyField(Client, related_name='logs', verbose_name='клиент')
@@ -71,7 +72,7 @@ class MailingLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='пользователь')
 
     def __str__(self):
-        return f'Лог рассылки для "{self.mailing_list}". Статус: "{self.status}".'
+        return f'Лог: "{self.mailing_list}"'
 
     class Meta:
         verbose_name = 'Лог рассылки'
