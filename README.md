@@ -4,4 +4,5 @@
 Команды:
 
 - python manage.py start_mailing - ручная отправка рассылок, подходящих под условия (так же производится автоматически, каждые 5 секунд);
-- python manage.py csu - создать админа/менеджера.      
+- python manage.py csu - создать админа/менеджера;      
+- python manage.py runserver - запуск сервиса. 
